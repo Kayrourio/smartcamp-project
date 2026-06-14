@@ -12,7 +12,7 @@ struct __attribute__((packed)) EPDPacket {
     float   angleZ;
 };
 
-static void onReceive(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
+static void onReceive(const uint8_t *mac, const uint8_t *data, int len) {
     if (len != sizeof(EPDPacket)) return;
 
     EPDPacket pkt;
