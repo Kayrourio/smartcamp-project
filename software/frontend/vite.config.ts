@@ -16,5 +16,6 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    allowedHosts: ['localhost', 'race-icy-voicing.ngrok-free.dev'],
   },
 })
