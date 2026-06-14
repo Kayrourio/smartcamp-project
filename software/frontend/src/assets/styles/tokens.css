@@ -1,0 +1,25 @@
+:root {
+  --green-dark: #4f6a2e;
+  --green-med: #6e8b43;
+  --brown: #6b4528;
+  --blue: #2e5a74;
+  --white: #ffffff;
+  --gray-light: #f5f5f0;
+  --red: #c0392b;
+  --yellow: #f39c12;
+
+  --ink: #1f2926;
+  --ink-soft: #5c625d;
+  --ink-faint: #8a8f89;
+  --line: #e7e6e0;
+
+  --shadow-sm: 0 1px 3px rgba(31, 36, 33, 0.06), 0 1px 2px rgba(31, 36, 33, 0.04);
+  --shadow-md: 0 4px 16px rgba(31, 36, 33, 0.07), 0 1px 3px rgba(31, 36, 33, 0.05);
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+
+  --font-head: 'Sora', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}

@@ -1,0 +1,58 @@
+{
+  "landing": {
+    "eyebrow": "Prevenção de deslizamentos",
+    "tagline_trad": "Sistemas tradicionais dizem: vai chover.",
+    "tagline_punch": "O TerraSafe diz: esta encosta vai desabar.",
+    "subtitle": "Rede IoT de baixo custo que monitora a umidade do solo em tempo real e antecipa deslizamentos — salvando vidas na Zona da Mata.",
+    "cta": "VER MAPA AO VIVO",
+    "stats": {
+      "deaths_num": "73 mortos",
+      "deaths_tag": "Zona da Mata · MG — fev/2026",
+      "cost_num": "R$ 30–40",
+      "cost_tag": "Custo por unidade",
+      "cheaper_num": "2.000×",
+      "cheaper_tag": "Vs. sensores oficiais"
+    },
+    "how_title": "Como funciona",
+    "how_sub": "Do solo ao alerta, em segundos",
+    "steps": [
+      {
+        "n": "PASSO 01",
+        "title": "Sensor enterrado no solo",
+        "desc": "A sonda EPD monitora a umidade da encosta 24h, onde o risco nasce."
+      },
+      {
+        "n": "PASSO 02",
+        "title": "Rede mesh leva os dados",
+        "desc": "As leituras viajam por malha WiFi de nós comunitários até o servidor."
+      },
+      {
+        "n": "PASSO 03",
+        "title": "Mapa vivo dispara o alerta",
+        "desc": "O painel atualiza em tempo real e aciona alertas quando o solo satura."
+      }
+    ]
+  },
+  "map": {
+    "live_badge": "AO VIVO",
+    "back": "Voltar",
+    "sensor_location": "Campus UFV · Viçosa, MG",
+    "online": "online",
+    "layer_soil": "Solo",
+    "layer_clouds": "Nuvens",
+    "metric_moisture": "Umidade do Solo",
+    "metric_rainfall": "Precipitação",
+    "metric_temp": "Temperatura",
+    "metric_lux": "Luminosidade",
+    "trend_rising": "↑ subindo",
+    "badge_critical": "Crítico",
+    "alerts_title": "Histórico de alertas",
+    "rainfall_sub": "intenso · última 1h",
+    "temp_sub": "ar ambiente"
+  },
+  "risk": {
+    "SAFE": "NÍVEL SEGURO",
+    "ATTENTION": "NÍVEL ATENÇÃO — MONITORAMENTO ATIVO",
+    "CRITICAL": "NÍVEL CRÍTICO — RISCO DE DESLIZAMENTO"
+  }
+}
