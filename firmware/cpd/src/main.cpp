@@ -26,7 +26,9 @@ static void onReceive(const uint8_t *mac, const uint8_t *data, int len) {
     Serial.print(F("\",\"soil_moisture\":")); Serial.print(pkt.soilMoisture);
     Serial.print(F(",\"temperature\":"));     Serial.print(pkt.temperature, 2);
     Serial.print(F(",\"rainfall\":null"));
-    Serial.print(F(",\"lux\":null"));
+    Serial.print(F(",\"angle_x\":"));         Serial.print(pkt.angleX, 2);
+    Serial.print(F(",\"angle_y\":"));         Serial.print(pkt.angleY, 2);
+    Serial.print(F(",\"angle_z\":"));         Serial.print(pkt.angleZ, 2);
     Serial.println(F("}]}"));
 }
 

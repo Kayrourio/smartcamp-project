@@ -6,7 +6,10 @@ class ReadingOut(BaseModel):
     soil_moisture: float
     rainfall: float | None
     temperature: float | None
-    lux: int | None
+    angle_x: float | None
+    angle_y: float | None
+    angle_z: float | None
+    tilt_detected: bool
     risk_level: str
     received_at: datetime
 

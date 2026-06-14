@@ -9,6 +9,10 @@ const router = createRouter({
       path: '/mapa',
       component: () => import('@/views/MapView.vue'),
     },
+    {
+      path: '/mock',
+      component: () => import('@/views/MockView.vue'),
+    },
   ],
 })
 

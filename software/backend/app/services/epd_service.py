@@ -13,7 +13,10 @@ def _reading_out(row: SensorReading) -> ReadingOut:
         soil_moisture=float(row.soil_moisture),
         rainfall=float(row.rainfall) if row.rainfall is not None else None,
         temperature=float(row.temperature) if row.temperature is not None else None,
-        lux=row.lux,
+        angle_x=float(row.angle_x) if row.angle_x is not None else None,
+        angle_y=float(row.angle_y) if row.angle_y is not None else None,
+        angle_z=float(row.angle_z) if row.angle_z is not None else None,
+        tilt_detected=bool(row.tilt_detected),
         risk_level=row.risk_level,
         received_at=row.received_at,
     )

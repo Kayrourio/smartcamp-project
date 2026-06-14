@@ -6,7 +6,9 @@ class EpdReadingIn(BaseModel):
     soil_moisture: float
     rainfall: float | None = None
     temperature: float | None = None
-    lux: int | None = None
+    angle_x: float | None = None
+    angle_y: float | None = None
+    angle_z: float | None = None
 
 
 class CpdBatchIn(BaseModel):

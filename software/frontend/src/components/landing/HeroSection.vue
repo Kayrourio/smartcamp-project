@@ -11,7 +11,10 @@
         <span class="punch">{{ t('landing.tagline_punch') }}</span>
       </h1>
       <p class="subtitle">{{ t('landing.subtitle') }}</p>
-      <RouterLink to="/mapa" class="cta-btn">{{ t('landing.cta') }}</RouterLink>
+      <div class="cta-row">
+        <RouterLink to="/mapa" class="cta-btn">{{ t('landing.cta') }}</RouterLink>
+        <RouterLink to="/mock" class="demo-btn">Ver demonstração com 100 sensores</RouterLink>
+      </div>
     </div>
   </section>
 </template>
@@ -109,4 +112,28 @@ const { t } = useI18n()
 }
 
 .cta-btn:hover { opacity: 0.9; }
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.demo-btn {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: var(--white);
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 13px 22px;
+  border-radius: var(--r-sm);
+  transition: background 0.2s;
+}
+.demo-btn:hover { background: rgba(255,255,255,0.25); }
 </style>

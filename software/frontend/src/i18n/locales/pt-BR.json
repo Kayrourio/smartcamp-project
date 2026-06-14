@@ -6,12 +6,12 @@
     "subtitle": "Rede IoT de baixo custo que monitora a umidade do solo em tempo real e antecipa deslizamentos — salvando vidas na Zona da Mata.",
     "cta": "VER MAPA AO VIVO",
     "stats": {
-      "deaths_num": "73 mortos",
+      "deaths_num": "72 mortos",
       "deaths_tag": "Zona da Mata · MG — fev/2026",
-      "cost_num": "R$ 30–40",
+      "cost_num": "R$ 60–80",
       "cost_tag": "Custo por unidade",
-      "cheaper_num": "2.000×",
-      "cheaper_tag": "Vs. sensores oficiais"
+      "cheaper_num": "Resposta",
+      "cheaper_tag": "Instantânea"
     },
     "how_title": "Como funciona",
     "how_sub": "Do solo ao alerta, em segundos",
@@ -54,6 +54,7 @@
   "risk": {
     "SAFE": "NÍVEL SEGURO",
     "ATTENTION": "NÍVEL ATENÇÃO — MONITORAMENTO ATIVO",
+    "HIGH": "NÍVEL ALTO — RISCO ELEVADO",
     "CRITICAL": "NÍVEL CRÍTICO — RISCO DE DESLIZAMENTO"
   }
 }

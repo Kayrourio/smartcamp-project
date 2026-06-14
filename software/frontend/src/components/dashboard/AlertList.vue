@@ -6,7 +6,11 @@
       <li v-for="alert in alerts" :key="alert.id" class="alert-item" :class="`level-${alert.risk_level.toLowerCase()}`">
         <IcoWarn :size="14" :color="riskColor(alert.risk_level)" />
         <div class="alert-body">
-          <span class="alert-level">{{ t(`risk.${alert.risk_level}`) }}</span>
+          <span class="alert-level">
+            {{ t(`risk.${alert.risk_level}`) }}
+            <span v-if="alert.is_landslide" class="tag tag--landslide">DESLIZAMENTO</span>
+            <span v-else-if="alert.tilt_detected" class="tag tag--tilt">Sensor caído</span>
+          </span>
           <span class="alert-detail">{{ alert.epd_uid }} · {{ alert.soil_moisture.toFixed(1) }}% · {{ formatTime(alert.timestamp) }}</span>
         </div>
       </li>
@@ -24,6 +28,7 @@ const { t } = useI18n()
 
 function riskColor(level: string): string {
   if (level === 'CRITICAL') return 'var(--red)'
+  if (level === 'HIGH') return '#E67E22'
   if (level === 'ATTENTION') return 'var(--yellow)'
   return 'var(--green-med)'
 }
@@ -71,6 +76,7 @@ function formatTime(d: Date): string {
 }
 
 .level-critical { border-left: 3px solid var(--red); }
+.level-high { border-left: 3px solid #E67E22; }
 .level-attention { border-left: 3px solid var(--yellow); }
 
 .alert-body {
@@ -89,5 +95,26 @@ function formatTime(d: Date): string {
 .alert-detail {
   font-size: 11px;
   color: var(--ink-faint);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+.tag--landslide {
+  background: var(--red);
+  color: #fff;
+}
+
+.tag--tilt {
+  background: #E67E22;
+  color: #fff;
 }
 </style>

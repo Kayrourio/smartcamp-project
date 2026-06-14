@@ -7,6 +7,7 @@ static bool _ready = false;
 
 bool Gyroscope::init(uint8_t sda, uint8_t scl) {
     Wire.begin(sda, scl);
+    Wire.setTimeOut(50);  // 50 ms — prevents I2C bus hang from starving the WDT
     byte err = _mpu.begin();
     if (err != 0) {
         Serial.print(F("[Gyroscope] MPU6050 not found (err="));

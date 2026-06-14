@@ -1,10 +1,13 @@
-export type RiskLevel = 'SAFE' | 'ATTENTION' | 'CRITICAL'
+export type RiskLevel = 'SAFE' | 'ATTENTION' | 'HIGH' | 'CRITICAL'
 
 export interface EpdReading {
   soil_moisture: number
   rainfall: number | null
   temperature: number | null
-  lux: number | null
+  angle_x: number | null
+  angle_y: number | null
+  angle_z: number | null
+  tilt_detected: boolean
   risk_level: RiskLevel
   received_at: string
 }

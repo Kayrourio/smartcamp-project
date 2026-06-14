@@ -14,7 +14,7 @@
 #define EPD_UUID  "EPD-001"
 
 // Run the CPD firmware first and copy the MAC printed on its Serial monitor here
-static uint8_t CPD_MAC[6] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
+static uint8_t CPD_MAC[6] = {0x88, 0x57, 0x21, 0x8E, 0xBC, 0x24};
 
 struct __attribute__((packed)) EPDPacket {
     char    uuid[16];
@@ -57,10 +57,21 @@ void setup() {
 }
 
 void loop() {
-    Gyroscope::update();
-
+    static unsigned long lastGyro = 0;
     static unsigned long lastSend = 0;
     unsigned long now = millis();
+
+    if (now - lastGyro >= 20) {
+        lastGyro = now;
+        Gyroscope::update();
+    }
+
+    delay(5);
+
+    // Skip the first send so all statics are in a known state before any I/O
+    static bool firstLoop = true;
+    if (firstLoop) { firstLoop = false; lastSend = now; return; }
+
     if (now - lastSend < SEND_INTERVAL) return;
     lastSend = now;
 

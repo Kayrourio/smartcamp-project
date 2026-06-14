@@ -13,7 +13,10 @@ class SensorReading(Base):
     soil_moisture: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False)
     rainfall: Mapped[float | None] = mapped_column(Numeric(6, 2), nullable=True)
     temperature: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
-    lux: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    angle_x: Mapped[float | None] = mapped_column(Numeric(7, 2), nullable=True)
+    angle_y: Mapped[float | None] = mapped_column(Numeric(7, 2), nullable=True)
+    angle_z: Mapped[float | None] = mapped_column(Numeric(7, 2), nullable=True)
+    tilt_detected: Mapped[bool] = mapped_column(Integer, nullable=False, default=0)
     risk_level: Mapped[str] = mapped_column(String(12), nullable=False)
     received_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
