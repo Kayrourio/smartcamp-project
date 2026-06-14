@@ -6,56 +6,93 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-
-// leaflet.heat is a side-effect import, no types
-// @ts-expect-error — no types for leaflet.heat
+// leaflet.heat has no type declarations — side-effect import only
 import 'leaflet.heat'
+import type { EpdOut, GridPoint } from '@/types/sensor'
 
-const props = withDefaults(
-  defineProps<{
-    soilMoisture: number
-    sensorLat?: number
-    sensorLng?: number
-    activeLayer?: string
-  }>(),
-  {
-    sensorLat: -20.7546,
-    sensorLng: -42.8825,
-    activeLayer: 'soil',
-  },
-)
+const props = defineProps<{
+  epds: EpdOut[]
+  rainGrid: GridPoint[]
+  selectedUid: string | null
+}>()
+
+const emit = defineEmits<{ 'select-epd': [uid: string] }>()
+
+const RISK_COLOR: Record<string, string> = {
+  SAFE: '#52B788',
+  ATTENTION: '#F39C12',
+  CRITICAL: '#C0392B',
+}
+const MAX_RAIN_MM = 50
 
 const mapEl = ref<HTMLDivElement | null>(null)
 let mapInstance: L.Map | null = null
-let heatLayer: L.Layer & { setLatLngs: (pts: unknown[]) => void; setOptions: (opts: unknown) => void } | null = null
-let markerLayer: L.Marker | null = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let rainHeatLayer: any = null
+const markerMap = new Map<string, L.CircleMarker>()
 
-function buildMarkerIcon(moisture: number): L.DivIcon {
-  return L.divIcon({
-    html: `
-      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-        <div style="background:#1F2926;color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap">
-          EPD-01 · ${moisture.toFixed(0)}%
-        </div>
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="18" cy="10" rx="9" ry="6" fill="#6B4528"/>
-          <rect x="9" y="10" width="18" height="14" rx="2" fill="#4F6A2E"/>
-          <ellipse cx="18" cy="24" rx="9" ry="6" fill="#6E8B43"/>
-          <circle cx="18" cy="10" r="3" fill="#FFFFFF" opacity="0.5"/>
-        </svg>
-      </div>`,
-    className: '',
-    iconAnchor: [18, 36],
-    iconSize: [60, 56],
+function buildCircleMarker(epd: EpdOut): L.CircleMarker {
+  const lat = epd.lat ?? -20.7546
+  const lng = epd.lng ?? -42.8825
+  const risk = epd.latest?.risk_level ?? 'SAFE'
+  const moisture = epd.latest?.soil_moisture ?? 0
+  const isSelected = epd.epd_uid === props.selectedUid
+
+  const marker = L.circleMarker([lat, lng], {
+    radius: isSelected ? 13 : 9,
+    fillColor: RISK_COLOR[risk] ?? '#52B788',
+    color: '#fff',
+    weight: isSelected ? 3 : 2,
+    opacity: 1,
+    fillOpacity: 0.92,
   })
+
+  marker.bindTooltip(
+    `<b>${epd.epd_uid}</b>${epd.label ? `<br><span style="color:#888">${epd.label}</span>` : ''}<br>Umidade: ${moisture.toFixed(1)}%`,
+    { sticky: true },
+  )
+
+  marker.on('click', () => emit('select-epd', epd.epd_uid))
+  return marker
+}
+
+function updateMarkers(epds: EpdOut[]) {
+  if (!mapInstance) return
+
+  const currentUids = new Set(epds.map((e) => e.epd_uid))
+
+  for (const [uid, m] of markerMap) {
+    if (!currentUids.has(uid)) {
+      m.remove()
+      markerMap.delete(uid)
+    }
+  }
+
+  for (const epd of epds) {
+    if (epd.lat == null || epd.lng == null) continue
+    const existing = markerMap.get(epd.epd_uid)
+    if (existing) {
+      existing.remove()
+      markerMap.delete(epd.epd_uid)
+    }
+    const m = buildCircleMarker(epd)
+    m.addTo(mapInstance)
+    markerMap.set(epd.epd_uid, m)
+  }
+}
+
+function updateRainGrid(grid: GridPoint[]) {
+  if (!rainHeatLayer) return
+  const pts = grid.map((p) => [p.lat, p.lng, Math.min(p.rainfall_mm / MAX_RAIN_MM, 1.0)])
+  rainHeatLayer.setLatLngs(pts)
 }
 
 onMounted(() => {
   if (!mapEl.value) return
 
   mapInstance = L.map(mapEl.value, {
-    center: [props.sensorLat, props.sensorLng],
-    zoom: 15,
+    center: [-20.7546, -42.8825],
+    zoom: 14,
     zoomControl: true,
   })
 
@@ -64,19 +101,17 @@ onMounted(() => {
     maxZoom: 19,
   }).addTo(mapInstance)
 
-  // @ts-expect-error — leaflet.heat adds L.heatLayer
-  heatLayer = L.heatLayer([[props.sensorLat, props.sensorLng, props.soilMoisture / 100]], {
-    radius: 30 + (props.soilMoisture / 100) * 90,
-    blur: 25,
+  // Rain heatmap — always below markers, starts empty until first fetch
+  // @ts-expect-error
+  rainHeatLayer = L.heatLayer([], {
+    radius: 55,
+    blur: 35,
     maxZoom: 17,
-    gradient: { 0.0: '#52B788', 0.6: '#F39C12', 1.0: '#C0392B' },
+    gradient: { 0.0: '#aed6f1', 0.4: '#2980b9', 0.8: '#1a5276', 1.0: '#0d2137' },
   }).addTo(mapInstance)
 
-  markerLayer = L.marker([props.sensorLat, props.sensorLng], {
-    icon: buildMarkerIcon(props.soilMoisture),
-  })
-    .addTo(mapInstance)
-    .bindPopup(`<b>EPD-01</b><br>Umidade: ${props.soilMoisture.toFixed(1)}%`)
+  updateMarkers(props.epds)
+  updateRainGrid(props.rainGrid)
 })
 
 onUnmounted(() => {
@@ -84,16 +119,21 @@ onUnmounted(() => {
   mapInstance = null
 })
 
+// Redraw markers on any EPD data change or selection change
+watch([() => props.epds, () => props.selectedUid], () => updateMarkers(props.epds), { deep: true })
+
+// Update rain heatmap when grid data changes
+watch(() => props.rainGrid, updateRainGrid, { deep: true })
+
+// Pan map to the newly selected EPD
 watch(
-  () => props.soilMoisture,
-  (val) => {
-    if (!heatLayer || !markerLayer) return
-    const intensity = val / 100
-    const radius = 30 + intensity * 90
-    heatLayer.setLatLngs([[props.sensorLat, props.sensorLng, intensity]])
-    heatLayer.setOptions({ radius })
-    markerLayer.setIcon(buildMarkerIcon(val))
-    markerLayer.setPopupContent(`<b>EPD-01</b><br>Umidade: ${val.toFixed(1)}%`)
+  () => props.selectedUid,
+  (uid) => {
+    if (!uid || !mapInstance) return
+    const epd = props.epds.find((e) => e.epd_uid === uid)
+    if (epd?.lat != null && epd.lng != null) {
+      mapInstance.panTo([epd.lat, epd.lng], { animate: true, duration: 0.5 })
+    }
   },
 )
 </script>

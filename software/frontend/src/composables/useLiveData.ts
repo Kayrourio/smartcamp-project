@@ -1,8 +1,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
-import type { SensorReading } from '@/types/sensor'
 
+// Legacy composable — superseded by useEpdList for the multi-EPD architecture.
+// Kept for reference only; not used in the current UI.
 export function useLiveData() {
-  const data = ref<SensorReading | null>(null)
+  const data = ref<Record<string, unknown> | null>(null)
   const isLoading = ref(true)
   const error = ref<string | null>(null)
   const lastUpdated = ref<Date | null>(null)

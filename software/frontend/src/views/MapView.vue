@@ -19,70 +19,93 @@
     <div class="layout">
       <!-- Map -->
       <div class="map-container">
-        <div class="map-controls">
-          <LayerToggle v-model="activeLayer" />
-        </div>
         <LiveMap
-          v-if="data"
-          :soil-moisture="data.soil_moisture"
-          :active-layer="activeLayer"
+          :epds="epds"
+          :rain-grid="rainGrid"
+          :selected-uid="selectedUid"
+          @select-epd="selectEpd"
         />
-        <div v-else class="map-placeholder">Carregando mapa...</div>
+        <div v-if="isLoading && epds.length === 0" class="map-overlay">
+          Carregando sensores...
+        </div>
       </div>
 
       <!-- Sidebar -->
       <aside class="sidebar">
-        <div class="sensor-info">
-          <span class="sensor-id">EPD-01</span>
-          <span class="sensor-loc">{{ t('map.sensor_location') }}</span>
-          <span class="sensor-status" :class="{ online: data?.online }">
-            ● {{ data?.online ? t('map.online') : 'offline' }}
-          </span>
+        <div class="section-title">{{ t('map.sensors_title') }} ({{ epds.length }})</div>
+
+        <div v-if="epds.length === 0 && !isLoading" class="empty-state">
+          Nenhum sensor cadastrado.
         </div>
 
-        <StatusBar v-if="data" :risk-level="data.risk_level" />
+        <div
+          v-for="epd in epds"
+          :key="epd.epd_uid"
+          class="epd-card"
+          :class="{
+            selected: epd.epd_uid === selectedUid,
+            'border-critical': epd.latest?.risk_level === 'CRITICAL' && epd.epd_uid === selectedUid,
+            'border-attention': epd.latest?.risk_level === 'ATTENTION' && epd.epd_uid === selectedUid,
+          }"
+          @click="selectEpd(epd.epd_uid)"
+        >
+          <!-- Card header -->
+          <div class="epd-row">
+            <div class="epd-id-block">
+              <span class="epd-uid">{{ epd.epd_uid }}</span>
+              <span v-if="epd.label" class="epd-label">{{ epd.label }}</span>
+            </div>
+            <div
+              class="risk-dot"
+              :title="epd.latest?.risk_level ?? 'SEM LEITURA'"
+              :style="{ background: riskColor(epd.latest?.risk_level) }"
+            />
+          </div>
 
-        <MetricFeature
-          v-if="data"
-          :moisture="data.soil_moisture"
-          :risk-level="data.risk_level"
-        />
+          <!-- Moisture + risk badge -->
+          <div v-if="epd.latest" class="epd-metrics-row">
+            <span class="epd-moisture">
+              {{ epd.latest.soil_moisture.toFixed(0) }}<span class="pct">%</span>
+            </span>
+            <span class="risk-badge" :style="{ background: riskColor(epd.latest.risk_level) }">
+              {{ riskLabel(epd.latest.risk_level) }}
+            </span>
+          </div>
+          <div v-else class="epd-offline">Sem leitura</div>
 
-        <div class="chips">
-          <MetricChip
-            :label="t('map.metric_rainfall')"
-            :value="data?.rainfall ?? null"
-            unit=" mm"
-            :sub="t('map.rainfall_sub')"
-          >
-            <template #icon>
-              <IcoRain :size="20" color="var(--blue)" />
-            </template>
-          </MetricChip>
+          <!-- Metrics: always visible when there's a reading -->
+          <div v-if="epd.latest" class="chips">
+            <MetricChip
+              :label="t('map.metric_rainfall')"
+              :value="epd.latest.rainfall"
+              unit=" mm"
+              :sub="t('map.rainfall_sub')"
+            >
+              <template #icon><IcoRain :size="18" color="var(--blue)" /></template>
+            </MetricChip>
+            <MetricChip
+              :label="t('map.metric_temp')"
+              :value="epd.latest.temperature"
+              unit="°C"
+              :sub="t('map.temp_sub')"
+            >
+              <template #icon><IcoTemp :size="18" color="var(--brown)" /></template>
+            </MetricChip>
+            <MetricChip
+              :label="t('map.metric_lux')"
+              :value="epd.latest.lux"
+              unit=" lx"
+            >
+              <template #icon><IcoSun :size="18" color="var(--yellow)" /></template>
+            </MetricChip>
+          </div>
 
-          <MetricChip
-            :label="t('map.metric_temp')"
-            :value="data?.temperature ?? null"
-            unit="°C"
-            :sub="t('map.temp_sub')"
-          >
-            <template #icon>
-              <IcoTemp :size="20" color="var(--brown)" />
-            </template>
-          </MetricChip>
-
-          <MetricChip
-            :label="t('map.metric_lux')"
-            :value="data?.lux ?? null"
-            unit=" lx"
-          >
-            <template #icon>
-              <IcoSun :size="20" color="var(--yellow)" />
-            </template>
-          </MetricChip>
+          <!-- History chart: only for the selected EPD -->
+          <template v-if="epd.epd_uid === selectedUid">
+            <HumidityChart v-if="chartData.length > 0" :data="chartData" />
+            <div v-else class="chart-empty">Aguardando histórico...</div>
+          </template>
         </div>
-
-        <HumidityChart :data="chartData" />
 
         <AlertList :alerts="alerts" />
       </aside>
@@ -94,13 +117,13 @@
 import { ref, computed, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useLiveData } from '@/composables/useLiveData'
+import { useEpdList } from '@/composables/useEpdList'
+import { useRainGrid } from '@/composables/useRainGrid'
 import { useAlertHistory } from '@/composables/useAlertHistory'
+import { useEpdHistory } from '@/composables/useEpdHistory'
+import type { RiskLevel } from '@/types/sensor'
 import LiveMap from '@/components/map/LiveMap.vue'
-import LayerToggle from '@/components/map/LayerToggle.vue'
 import LiveBadge from '@/components/dashboard/LiveBadge.vue'
-import StatusBar from '@/components/dashboard/StatusBar.vue'
-import MetricFeature from '@/components/dashboard/MetricFeature.vue'
 import MetricChip from '@/components/dashboard/MetricChip.vue'
 import HumidityChart from '@/components/dashboard/HumidityChart.vue'
 import AlertList from '@/components/dashboard/AlertList.vue'
@@ -110,22 +133,57 @@ import IcoTemp from '@/components/icons/IcoTemp.vue'
 import IcoSun from '@/components/icons/IcoSun.vue'
 
 const { t } = useI18n()
-const activeLayer = ref('soil')
-const { data } = useLiveData()
-const { alerts } = useAlertHistory(data)
 
-const chartData = ref<number[]>([])
-const MAX_CHART_POINTS = 30
+const { epds, isLoading } = useEpdList()
+const { grid: rainGrid } = useRainGrid()
+const { alerts } = useAlertHistory(epds)
 
-watch(data, (v) => {
-  if (!v) return
-  chartData.value.push(v.soil_moisture)
-  if (chartData.value.length > MAX_CHART_POINTS) chartData.value.shift()
-})
+const selectedUid = ref<string | null>(null)
+const { history } = useEpdHistory(selectedUid)
 
+// Auto-select first EPD on first load
+watch(
+  epds,
+  (list) => {
+    if (!selectedUid.value && list.length > 0) {
+      selectedUid.value = list[0].epd_uid
+    }
+  },
+  { immediate: true },
+)
+
+function selectEpd(uid: string) {
+  selectedUid.value = uid
+}
+
+const RISK_COLORS: Record<string, string> = {
+  SAFE: '#52B788',
+  ATTENTION: '#F39C12',
+  CRITICAL: '#C0392B',
+}
+const RISK_LABELS: Record<string, string> = {
+  SAFE: 'Seguro',
+  ATTENTION: 'Atenção',
+  CRITICAL: 'Crítico',
+}
+
+function riskColor(level?: RiskLevel | null): string {
+  return RISK_COLORS[level ?? 'SAFE'] ?? '#52B788'
+}
+
+function riskLabel(level: RiskLevel): string {
+  return RISK_LABELS[level] ?? level
+}
+
+// Chart: moisture history of selected EPD
+const chartData = computed(() => history.value.map((r) => r.soil_moisture))
+
+// Header color = worst risk level across all EPDs
 const headerBg = computed(() => {
-  if (!data.value) return 'var(--green-dark)'
-  return { SAFE: 'var(--green-dark)', ATTENTION: 'var(--yellow)', CRITICAL: 'var(--red)' }[data.value.risk_level] ?? 'var(--green-dark)'
+  const levels = epds.value.map((e) => e.latest?.risk_level)
+  if (levels.includes('CRITICAL')) return 'var(--red)'
+  if (levels.includes('ATTENTION')) return 'var(--yellow)'
+  return 'var(--green-dark)'
 })
 </script>
 
@@ -184,79 +242,161 @@ const headerBg = computed(() => {
   min-width: 0;
 }
 
-.map-controls {
+.map-overlay {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
-}
-
-.map-placeholder {
-  width: 100%;
-  height: 100%;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(245, 245, 240, 0.8);
   color: var(--ink-faint);
   font-size: 14px;
-  background: var(--gray-light);
+  pointer-events: none;
+  z-index: 500;
 }
 
+/* ── Sidebar ─────────────────────────────────── */
 .sidebar {
-  width: 340px;
+  width: 320px;
   flex-shrink: 0;
   overflow-y: auto;
   background: var(--gray-light);
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   border-left: 1px solid var(--line);
 }
 
-.sensor-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 0 4px;
-}
-
-.sensor-id {
+.section-title {
   font-family: var(--font-head);
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.sensor-loc {
-  font-size: 13px;
-  color: var(--ink-soft);
-}
-
-.sensor-status {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 2px;
 }
 
-.sensor-status.online { color: var(--green-med); }
+.empty-state {
+  font-size: 13px;
+  color: var(--ink-faint);
+  text-align: center;
+  padding: 24px 0;
+}
 
-.chips {
+/* ── EPD card ─────────────────────────────────── */
+.epd-card {
+  background: var(--white);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.18s, box-shadow 0.18s;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* Mobile: stack vertically */
+.epd-card:hover { border-color: var(--line); }
+.epd-card.selected { border-color: var(--green-med); box-shadow: var(--shadow-md); }
+.epd-card.selected.border-critical { border-color: var(--red); }
+.epd-card.selected.border-attention { border-color: var(--yellow); }
+
+.epd-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.epd-id-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.epd-uid {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.epd-label {
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.risk-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 3px;
+  flex-shrink: 0;
+  transition: background 0.4s;
+}
+
+.epd-metrics-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.epd-moisture {
+  font-family: var(--font-head);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.pct {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.risk-badge {
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.epd-offline {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+/* ── Expanded detail ──────────────────────────── */
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chart-empty {
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-align: center;
+  padding: 8px 0;
+}
+
+/* ── Mobile ───────────────────────────────────── */
 @media (max-width: 700px) {
   .layout { flex-direction: column; }
-  .map-container { min-height: 50dvh; }
+  .map-container { min-height: 45dvh; }
   .sidebar {
     width: 100%;
     border-left: none;
     border-top: 1px solid var(--line);
-    overflow-y: auto;
-    max-height: 50dvh;
+    max-height: 55dvh;
   }
 }
 </style>

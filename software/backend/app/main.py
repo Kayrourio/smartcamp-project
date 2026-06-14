@@ -6,6 +6,11 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.api.v1.router import router
 
+import app.models.cpd      # noqa: F401
+import app.models.epd      # noqa: F401
+import app.models.epd_cpd  # noqa: F401
+import app.models.reading  # noqa: F401
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

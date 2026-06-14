@@ -1,21 +1,36 @@
-export interface SensorReading {
-  sensor_id: string
-  location: string
+export type RiskLevel = 'SAFE' | 'ATTENTION' | 'CRITICAL'
+
+export interface EpdReading {
   soil_moisture: number
   rainfall: number | null
   temperature: number | null
   lux: number | null
-  risk_level: 'SAFE' | 'ATTENTION' | 'CRITICAL'
-  timestamp: string
-  online: boolean
+  risk_level: RiskLevel
+  received_at: string
+}
+
+export interface EpdOut {
+  epd_uid: string
+  label: string | null
+  lat: number | null
+  lng: number | null
+  active: boolean
+  latest: EpdReading | null
+}
+
+export interface GridPoint {
+  lat: number
+  lng: number
+  rainfall_mm: number
 }
 
 export interface HistoryPoint {
   soil_moisture: number
-  timestamp: string
+  risk_level: RiskLevel
+  received_at: string
 }
 
-export interface SensorHistory {
-  sensor_id: string
+export interface EpdHistory {
+  epd_uid: string
   readings: HistoryPoint[]
 }

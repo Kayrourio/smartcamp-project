@@ -7,7 +7,7 @@
         <IcoWarn :size="14" :color="riskColor(alert.risk_level)" />
         <div class="alert-body">
           <span class="alert-level">{{ t(`risk.${alert.risk_level}`) }}</span>
-          <span class="alert-detail">{{ alert.soil_moisture.toFixed(1) }}% umidade · {{ formatTime(alert.timestamp) }}</span>
+          <span class="alert-detail">{{ alert.epd_uid }} · {{ alert.soil_moisture.toFixed(1) }}% · {{ formatTime(alert.timestamp) }}</span>
         </div>
       </li>
     </ul>

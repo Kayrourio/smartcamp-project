@@ -1,31 +1,42 @@
 import { ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import type { SensorReading } from '@/types/sensor'
+import type { EpdOut } from '@/types/sensor'
 
 export interface AlertEntry {
   id: number
+  epd_uid: string
   risk_level: string
   soil_moisture: number
   timestamp: Date
 }
 
-export function useAlertHistory(data: Ref<SensorReading | null>) {
+export function useAlertHistory(epds: Ref<EpdOut[]>) {
   const alerts = ref<AlertEntry[]>([])
   let idCounter = 0
+  const prevRisk = new Map<string, string>()
 
-  watch(data, (newVal, oldVal) => {
-    if (!newVal) return
-    const changed = !oldVal || newVal.risk_level !== oldVal.risk_level
-    if (changed && newVal.risk_level !== 'SAFE') {
-      alerts.value.unshift({
-        id: ++idCounter,
-        risk_level: newVal.risk_level,
-        soil_moisture: newVal.soil_moisture,
-        timestamp: new Date(),
-      })
-      if (alerts.value.length > 20) alerts.value.pop()
-    }
-  })
+  watch(
+    epds,
+    (list) => {
+      for (const epd of list) {
+        if (!epd.latest) continue
+        const prev = prevRisk.get(epd.epd_uid)
+        const curr = epd.latest.risk_level
+        if (prev !== undefined && prev !== curr && curr !== 'SAFE') {
+          alerts.value.unshift({
+            id: ++idCounter,
+            epd_uid: epd.epd_uid,
+            risk_level: curr,
+            soil_moisture: epd.latest.soil_moisture,
+            timestamp: new Date(),
+          })
+          if (alerts.value.length > 20) alerts.value.pop()
+        }
+        prevRisk.set(epd.epd_uid, curr)
+      }
+    },
+    { deep: true },
+  )
 
   return { alerts }
 }
