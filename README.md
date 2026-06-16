@@ -1,4 +1,5 @@
-# 🌍 TerraSafe
+# <p align="center"><img src="software/frontend/dist/logo.png" alt="TerraSafe logo" width="200" height="200" /></p>
+# TerraSafe
 
 > **Intelligent Landslide Alert and Prevention System**  
 > SmartCamp 2026 — Viçosa Smart TecnoParque UFV — Challenge 3: Heavy Rain and Flood Simulation
@@ -7,7 +8,7 @@
 
 ## Why it exists
 
-In February 2026, the Zona da Mata region of Minas Gerais experienced one of its worst climate disasters: **73 confirmed deaths** across the municipalities of Juiz de Fora and Ubá, over 5,500 people displaced, and 752 mm of rainfall accumulated in a single month in Juiz de Fora — the highest reading ever recorded by INMET.
+In February 2026, the Zona da Mata region of Minas Gerais experienced one of its worst climate disasters: **72 confirmed deaths** across the municipalities of Juiz de Fora and Ubá, over 5,500 people displaced, and 752 mm of rainfall accumulated in a single month in Juiz de Fora, the highest reading ever recorded by INMET.
 
 Viçosa sits in the same region. Under the same risks.
 
@@ -19,7 +20,7 @@ The problem is not the absence of climate forecasting — INMET already issues r
 
 ## What it is
 
-TerraSafe is a distributed network of low-cost IoT sensors (~R$ 30–40/unit) that monitor **soil moisture**, **tilt**, **precipitation**, and **environmental conditions** in real time at strategic risk points. Data is fed into a web platform with a live risk map and preventive alerts for Civil Defense agencies and residents.
+TerraSafe is a distributed network of low-cost IoT sensors (~R$ 60–80/unit) that monitor **soil moisture**, **tilt**, **precipitation**, and **environmental conditions** in real time at strategic risk points. Data is fed into a web platform with a live risk map and preventive alerts for Civil Defense agencies and residents.
 
 ---
 
@@ -181,7 +182,7 @@ App at `http://localhost:5173`. API calls are proxied to `localhost:8000`.
 
 | Phase | Scope |
 |---|---|
-| **Hackathon** | 1–3 sensors. Functional dashboard. Proof of concept. |
+| **Hackathon** | 1 sensor. Functional dashboard. Proof of concept. |
 | **Municipal pilot** | 50–200 sensors at Civil Defense risk points across Viçosa |
 | **Regional scale** | 1,000–5,000 sensors across Zona da Mata. Integration with SGB and CEMADEN. |
 | **Commercial product** | SaaS for municipalities + hardware. Expansion into precision agriculture. |
