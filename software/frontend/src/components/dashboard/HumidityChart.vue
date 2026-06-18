@@ -92,7 +92,7 @@ function draw(readings: number[], labels: string[] = []) {
   }
   ctx.setLineDash([])
 
-  // time labels — show first, middle, last
+  // time labels,show first, middle, last
   if (labels.length >= 2) {
     ctx.fillStyle = '#999'
     ctx.font = `${10 * Math.min(dpr, 1.5)}px sans-serif`

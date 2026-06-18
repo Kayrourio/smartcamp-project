@@ -1,17 +1,25 @@
 # 🌍 TerraSafe
 
 > **Intelligent Landslide Alert and Prevention System**  
-> SmartCamp 2026 — Viçosa Smart TecnoParque UFV — Challenge 3: Heavy Rain and Flood Simulation
+> SmartCamp 2026,Viçosa Smart TecnoParque UFV,Challenge 3: Heavy Rain and Flood Simulation
+
+---
+
+## 🏆 1st Place,Bootcamp Smart Cities · UFV · June 2026
+
+TerraSafe won **1st place** (R$ 2,000 prize) at the **SMARTCAMP de Cidades Inteligentes**, organized by the [Viçosa SMART](https://centev.ufv.br) project in partnership with **LabMAKER (TecnoParque/UFV)** and **VUEI UFV**, held on June 13–14, 2026 in Viçosa, MG.
+
+> [Read the official article (pt-BR) →](https://centev.ufv.br/solucoes-para-desafios-urbanos-marcam-o-bootcamp-cidades-inteligentes-do-tecnoparq-ufv/)
 
 ---
 
 ## Why it exists
 
-In February 2026, the Zona da Mata region of Minas Gerais experienced one of its worst climate disasters: **73 confirmed deaths** across the municipalities of Juiz de Fora and Ubá, over 5,500 people displaced, and 752 mm of rainfall accumulated in a single month in Juiz de Fora — the highest reading ever recorded by INMET.
+In February 2026, the Zona da Mata region of Minas Gerais experienced one of its worst climate disasters: **72 confirmed deaths** across the municipalities of Juiz de Fora and Ubá, over 5,500 people displaced, and 752 mm of rainfall accumulated in a single month in Juiz de Fora,the highest reading ever recorded by INMET.
 
 Viçosa sits in the same region. Under the same risks.
 
-The problem is not the absence of climate forecasting — INMET already issues rainfall warnings. The problem is that **a rain alert is not a landslide alert**. 50 mm of rain on dry soil is absorbed without consequence. The same rain on already-saturated soil can trigger a landslide within hours. No system currently deployed in Viçosa monitors the actual state of the soil on critical hillsides.
+The problem is not the absence of climate forecasting,INMET already issues rainfall warnings. The problem is that **a rain alert is not a landslide alert**. 50 mm of rain on dry soil is absorbed without consequence. The same rain on already-saturated soil can trigger a landslide within hours. No system currently deployed in Viçosa monitors the actual state of the soil on critical hillsides.
 
 > *"Traditional systems say: it's going to rain. TerraSafe says: this hillside is going to collapse."*
 
@@ -41,13 +49,17 @@ TerraSafe is a distributed network of low-cost IoT sensors (~R$ 30–40/unit) th
 
 ## Hardware
 
+<p align="center">
+  <img src="cad/cad-image.png" alt="EPD sensor unit — 3D render" width="220" />
+</p>
+
 Each EPD unit is assembled inside a weatherproof cylinder installed vertically in the soil (~1 meter total):
 
 | Component | Role | Notes |
 |---|---|---|
-| ESP32 DoiT DevKit v1 | Microcontroller | — |
+| ESP32 DoiT DevKit v1 | Microcontroller |,|
 | DHT11 | Air temperature & humidity | Exposed section (~20 cm) |
-| Capacitive soil moisture sensor | Soil saturation | Pin 34 — buried section (~80 cm) |
+| Capacitive soil moisture sensor | Soil saturation | Pin 34,buried section (~80 cm) |
 | MPU6050 | Tilt detection via 3-axis accelerometer | I2C: SDA=21, SCL=22 |
 | Li-Ion 18650 battery | Autonomous power supply | Estimated autonomy: 3 days |
 
@@ -62,9 +74,9 @@ Risk is computed from soil moisture and tilt detected by the MPU6050:
 | Level | Condition |
 |---|---|
 | `SAFE` | Soil moisture < 10% |
-| `ATTENTION` | Soil moisture ≥ 10% — or sensor tilted but soil dry |
+| `ATTENTION` | Soil moisture ≥ 10%,or sensor tilted but soil dry |
 | `HIGH` | Soil moisture ≥ 25% |
-| `CRITICAL` | Soil moisture ≥ 70% — or sensor tilted + moisture ≥ HIGH |
+| `CRITICAL` | Soil moisture ≥ 70%,or sensor tilted + moisture ≥ HIGH |
 
 > A tilted sensor (MPU6050 X-axis < 45° from vertical) combined with high moisture indicates an imminent or ongoing landslide.
 
@@ -129,7 +141,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-API at `http://localhost:8000` — Docs at `http://localhost:8000/docs`
+API at `http://localhost:8000`,Docs at `http://localhost:8000/docs`
 
 Key environment variables (`.env`):
 
@@ -149,6 +161,8 @@ npm run dev
 ```
 
 App at `http://localhost:5173`. API calls are proxied to `localhost:8000`.
+
+> **Demo mode**: The `/simulador` route runs entirely in the browser with no backend required,it uses the browser's Geolocation API to place a virtual sensor at your current position, with sliders to vary readings and preset scenarios (Safe → Critical).
 
 ---
 
@@ -172,7 +186,7 @@ App at `http://localhost:5173`. API calls are proxied to `localhost:8000`.
 |---|---|
 | Firmware | C++ (Arduino framework), PlatformIO, ESP-NOW |
 | Backend | Python, FastAPI, SQLAlchemy 2.0 (async), SQLite / PostgreSQL, Alembic |
-| Frontend | Vue 3, TypeScript, Vite, Vue Router, Leaflet, leaflet.heat, Vue-i18n |
+| Frontend | Vue 3, TypeScript, Vite, Vue Router, Leaflet, leaflet.heat, Vue-i18n (pt-BR / en-US) |
 | Weather | [Open-Meteo](https://open-meteo.com/) (no API key required) |
 
 ---
@@ -186,19 +200,19 @@ App at `http://localhost:5173`. API calls are proxied to `localhost:8000`.
 | **Regional scale** | 1,000–5,000 sensors across Zona da Mata. Integration with SGB and CEMADEN. |
 | **Commercial product** | SaaS for municipalities + hardware. Expansion into precision agriculture. |
 
-The same sensor that detects hillside collapse also monitors soil health on farmland — moisture, temperature, and tilt data have direct value for precision irrigation and agricultural traceability.
+The same sensor that detects hillside collapse also monitors soil health on farmland,moisture, temperature, and tilt data have direct value for precision irrigation and agricultural traceability.
 
 ---
 
 ## References
 
-- [Agência Brasil — 73 deaths in MG floods (01/03/2026)](https://agenciabrasil.ebc.com.br/geral/noticia/2026-03/sobe-para-72-o-numero-de-mortos-nas-chuvas-em-minas-gerais)
-- [SGB — Prevention saved R$800M in losses in 2023](https://www.sgb.gov.br/sala-de-imprensa/-/asset_publisher/ujyx/content/prevencao-de-desastres-servico-geologico-do-brasil-evitou-prejuizos-de-r-800-milhoes-em-2023)
-- [leodesigner/espNowFloodingMeshLibrary2](https://github.com/leodesigner/espNowFloodingMeshLibrary2) — ESP-NOW mesh library with AES128
-- [Inform@Risk (Medellín)](https://pmc.ncbi.nlm.nih.gov) — Open-source IoT LEWS in informal communities
-- [FOSS-Hack-AI-IoT-Landslide-Early-Warning-System](https://github.com/Agalya-2006/FOSS-Hack-AI-IoT-Landslide-Early-Warning-System) — Similar project from a 2026 hackathon
+- [Agência Brasil,73 deaths in MG floods (01/03/2026)](https://agenciabrasil.ebc.com.br/geral/noticia/2026-03/sobe-para-72-o-numero-de-mortos-nas-chuvas-em-minas-gerais)
+- [SGB,Prevention saved R$800M in losses in 2023](https://www.sgb.gov.br/sala-de-imprensa/-/asset_publisher/ujyx/content/prevencao-de-desastres-servico-geologico-do-brasil-evitou-prejuizos-de-r-800-milhoes-em-2023)
+- [leodesigner/espNowFloodingMeshLibrary2](https://github.com/leodesigner/espNowFloodingMeshLibrary2),ESP-NOW mesh library with AES128
+- [Inform@Risk (Medellín)](https://pmc.ncbi.nlm.nih.gov),Open-source IoT LEWS in informal communities
+- [FOSS-Hack-AI-IoT-Landslide-Early-Warning-System](https://github.com/Agalya-2006/FOSS-Hack-AI-IoT-Landslide-Early-Warning-System),Similar project from a 2026 hackathon
 
 ---
 
-*Built during SmartCamp 2026 — TecnoParque UFV — Viçosa, MG*  
+*Built during SmartCamp 2026,TecnoParque UFV,Viçosa, MG*  
 *"The difference between a weather alert and a disaster alert can be the difference between a family that evacuates in time and a tragedy."*

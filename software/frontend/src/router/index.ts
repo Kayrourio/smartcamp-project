@@ -13,6 +13,10 @@ const router = createRouter({
       path: '/mock',
       component: () => import('@/views/MockView.vue'),
     },
+    {
+      path: '/simulador',
+      component: () => import('@/views/SimulatorView.vue'),
+    },
   ],
 })
 

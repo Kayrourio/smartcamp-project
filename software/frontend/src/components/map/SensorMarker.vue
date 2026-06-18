@@ -1,5 +1,5 @@
 <template>
-  <!-- Rendered into Leaflet DivIcon — no template root needed -->
+  <!-- Rendered into Leaflet DivIcon,no template root needed -->
   <div class="sensor-marker">
     <div class="marker-label">{{ sensorId }} · {{ moisture }}%</div>
     <div class="marker-pin">

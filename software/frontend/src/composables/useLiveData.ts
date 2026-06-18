@@ -1,6 +1,6 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
-// Legacy composable — superseded by useEpdList for the multi-EPD architecture.
+// Legacy composable,superseded by useEpdList for the multi-EPD architecture.
 // Kept for reference only; not used in the current UI.
 export function useLiveData() {
   const data = ref<Record<string, unknown> | null>(null)

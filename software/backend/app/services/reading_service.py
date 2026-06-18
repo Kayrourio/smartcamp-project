@@ -12,7 +12,7 @@ RISK_THRESHOLDS = {
     "HIGH": 25.0,
     "ATTENTION": 10.0,
 }
-TILT_THRESHOLD = 45.0  # degrees — upright X ≈ -90, fallen X ≈ 0; tilted when abs(x) < threshold
+TILT_THRESHOLD = 45.0  # degrees,upright X ≈ -90, fallen X ≈ 0; tilted when abs(x) < threshold
 
 
 def is_tilted(angle_x: float | None, angle_y: float | None) -> bool:

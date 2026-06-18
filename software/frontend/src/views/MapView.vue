@@ -1,5 +1,6 @@
 <template>
   <div class="map-view">
+    <OfflineModal />
     <!-- Header -->
     <header
       class="map-header"
@@ -109,7 +110,7 @@
               <span
                 v-if="epd.lat == null || epd.lng == null"
                 class="no-coords-badge"
-                title="Sensor sem localização cadastrada — não aparece no mapa"
+                title="Sensor sem localização cadastrada,não aparece no mapa"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -214,6 +215,7 @@ import MetricChip from '@/components/dashboard/MetricChip.vue'
 import HumidityChart from '@/components/dashboard/HumidityChart.vue'
 import AlertList from '@/components/dashboard/AlertList.vue'
 import LogoMark from '@/components/icons/LogoMark.vue'
+import OfflineModal from '@/components/OfflineModal.vue'
 import IcoRain from '@/components/icons/IcoRain.vue'
 import IcoTemp from '@/components/icons/IcoTemp.vue'
 
@@ -228,7 +230,7 @@ const { history } = useEpdHistory(selectedUid)
 const liveMapRef = ref<InstanceType<typeof LiveMap> | null>(null)
 const mobileTab = ref<'map' | 'list'>('map')
 
-// Auto-select first EPD on first load — no fly, just highlights the card
+// Auto-select first EPD on first load,no fly, just highlights the card
 watch(
   epds,
   (list) => {
@@ -239,14 +241,14 @@ watch(
   { immediate: true },
 )
 
-// User clicked a card in the sidebar — select + fly
+// User clicked a card in the sidebar,select + fly
 function selectEpd(uid: string) {
   selectedUid.value = uid
   liveMapRef.value?.flyToEpd(uid)
   mobileTab.value = 'map'
 }
 
-// User clicked a marker on the map — select only (already centered)
+// User clicked a marker on the map,select only (already centered)
 function selectEpdFromMap(uid: string) {
   selectedUid.value = uid
 }

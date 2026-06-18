@@ -1,5 +1,6 @@
 <template>
   <div class="mock-view">
+    <OfflineModal />
     <!-- Header -->
     <header class="mock-header" :style="{ background: headerBg }">
       <RouterLink to="/" class="back-btn">
@@ -62,6 +63,7 @@ import { useMockEpds } from '@/composables/useMockEpds'
 import type { EpdOut } from '@/types/sensor'
 import LiveMap from '@/components/map/LiveMap.vue'
 import LogoMark from '@/components/icons/LogoMark.vue'
+import OfflineModal from '@/components/OfflineModal.vue'
 
 const { epds } = useMockEpds()
 

@@ -88,14 +88,14 @@ const userPos = ref<[number, number] | null>(null)
 // ── Weather-radar color scale ───────────────────────────────────────────────
 // Mirrors INMET / Windy / Weather.com progression: blue → cyan → green → yellow → orange → red → purple
 const COLOR_STOPS: [number, [number, number, number]][] = [
-  [0.00, [135, 206, 250]],  // sky-blue   — 0 mm (coverage indicator)
-  [0.04, [0,   230, 200]],  // teal       — ~2 mm (drizzle)
-  [0.12, [0,   210,  50]],  // green      — ~6 mm (light)
-  [0.25, [140, 230,   0]],  // lime       — ~12 mm
-  [0.40, [255, 210,   0]],  // yellow     — ~20 mm (moderate)
-  [0.60, [255, 130,   0]],  // orange     — ~30 mm (heavy)
-  [0.80, [220,  20,  20]],  // red        — ~40 mm (very heavy)
-  [1.00, [160,   0, 200]],  // purple     — 50+ mm (extreme)
+  [0.00, [135, 206, 250]],  // sky-blue  ,0 mm (coverage indicator)
+  [0.04, [0,   230, 200]],  // teal      ,~2 mm (drizzle)
+  [0.12, [0,   210,  50]],  // green     ,~6 mm (light)
+  [0.25, [140, 230,   0]],  // lime      ,~12 mm
+  [0.40, [255, 210,   0]],  // yellow    ,~20 mm (moderate)
+  [0.60, [255, 130,   0]],  // orange    ,~30 mm (heavy)
+  [0.80, [220,  20,  20]],  // red       ,~40 mm (very heavy)
+  [1.00, [160,   0, 200]],  // purple    ,50+ mm (extreme)
 ]
 
 function rainRGB(intensity: number): [number, number, number] {
@@ -391,7 +391,7 @@ function startGeolocation() {
       placeUserMarker(coords.latitude, coords.longitude, firstFix)
       firstFix = false
     },
-    () => { /* permission denied or unavailable — silent fail */ },
+    () => { /* permission denied or unavailable,silent fail */ },
     { enableHighAccuracy: true, maximumAge: 10_000 },
   )
 }
@@ -538,7 +538,7 @@ watch(() => props.rainGrid, (grid) => drawRain(grid), { deep: true })
 </style>
 
 <style>
-/* Pin hover — DivIcon lives outside Vue scope, must be non-scoped */
+/* Pin hover,DivIcon lives outside Vue scope, must be non-scoped */
 .epd-pin-wrap {
   cursor: pointer;
   transform-origin: bottom center;
