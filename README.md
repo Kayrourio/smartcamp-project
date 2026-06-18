@@ -50,7 +50,8 @@ TerraSafe is a distributed network of low-cost IoT sensors (~R$ 30–40/unit) th
 ## Hardware
 
 <p align="center">
-  <img src="cad/cad-image.png" alt="EPD sensor unit — 3D render" width="220" />
+  <img src="cad/cad-image.png" alt="EPD sensor unit — 3D render" width="220" /><br/>
+  <sub>CAD by <a href="https://www.instagram.com/dahrb_/">Davi Brito</a> · Mechanical Engineering student</sub>
 </p>
 
 Each EPD unit is assembled inside a weatherproof cylinder installed vertically in the soil (~1 meter total):
