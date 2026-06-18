@@ -6,34 +6,37 @@
         <p class="arch-sub">{{ t('landing.arch_sub') }}</p>
       </div>
 
-      <!-- Flow vertical on mobile, horizontal on desktop -->
+      <!-- Flow: horizontal on desktop, rail on mobile -->
       <div class="arch-flow">
         <div v-for="(node, i) in nodes" :key="node.key" class="arch-flow-item">
+          <!-- mobile rail dot -->
+          <div class="arch-rail-dot" aria-hidden="true" />
+
           <div class="arch-node">
+            <div class="arch-node-step">{{ String(i + 1).padStart(2, '0') }}</div>
             <div class="arch-node-icon">
-              <component :is="node.icon" :size="20" color="var(--green-dark)" />
+              <component :is="node.icon" :size="18" color="var(--green-dark)" />
             </div>
             <div class="arch-node-body">
               <span class="arch-node-name">{{ t('landing.' + node.key) }}</span>
               <span class="arch-node-desc">{{ t('landing.' + node.key + '_desc') }}</span>
             </div>
           </div>
-          <div v-if="i < nodes.length - 1" class="arch-arrow">
-            <svg class="arrow-h" width="20" height="12" viewBox="0 0 20 12" fill="none">
+
+          <!-- desktop arrow -->
+          <div v-if="i < nodes.length - 1" class="arch-arrow" aria-hidden="true">
+            <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
               <path d="M0 6h16M12 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <svg class="arrow-v" width="12" height="20" viewBox="0 0 12 20" fill="none">
-              <path d="M6 0v16M1 12l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
         </div>
       </div>
 
-      <!-- Protocol badges -->
+      <!-- Protocol chips -->
       <div class="arch-protocol">
         <div class="arch-proto-item">
           <span class="arch-proto-label">ESP-NOW</span>
-          <span class="arch-proto-desc">{{ locale === 'pt-BR' ? 'Sensor → Hub (sem roteador)' : 'Sensor → Hub (no router needed)' }}</span>
+          <span class="arch-proto-desc">{{ locale === 'pt-BR' ? 'Sensor → Hub · sem roteador' : 'Sensor → Hub · no router needed' }}</span>
         </div>
         <div class="arch-proto-item">
           <span class="arch-proto-label">Serial USB</span>
@@ -41,7 +44,7 @@
         </div>
         <div class="arch-proto-item">
           <span class="arch-proto-label">REST / HTTP</span>
-          <span class="arch-proto-desc">{{ locale === 'pt-BR' ? 'Bridge → API · atualiza a cada 2s' : 'Bridge → API · updates every 2s' }}</span>
+          <span class="arch-proto-desc">{{ locale === 'pt-BR' ? 'Bridge → API · a cada 2s' : 'Bridge → API · every 2s' }}</span>
         </div>
       </div>
     </div>
@@ -76,13 +79,13 @@ const nodes = [
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 32px;
 }
 
 .arch-header {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .arch-title {
@@ -101,7 +104,7 @@ const nodes = [
   line-height: 1.6;
 }
 
-/* ── Flow ─────────────────────────────── */
+/* ── Flow: desktop horizontal ────────────*/
 .arch-flow {
   display: flex;
   flex-wrap: wrap;
@@ -114,6 +117,10 @@ const nodes = [
   align-items: center;
   gap: 6px;
 }
+
+.arch-rail-dot { display: none; }
+
+.arch-node-step { display: none; }
 
 .arch-node {
   display: flex;
@@ -128,8 +135,8 @@ const nodes = [
 }
 
 .arch-node-icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   background: var(--gray-light);
   border-radius: 8px;
   display: flex;
@@ -161,9 +168,8 @@ const nodes = [
   color: var(--ink-faint);
   flex-shrink: 0;
 }
-.arrow-v { display: none; }
 
-/* ── Protocol row ─────────────────────── */
+/* ── Protocol ────────────────────────────*/
 .arch-protocol {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -194,12 +200,80 @@ const nodes = [
   line-height: 1.4;
 }
 
+/* ── Mobile: vertical rail ───────────────*/
 @media (max-width: 600px) {
-  .arch-flow { flex-direction: column; align-items: flex-start; }
-  .arch-flow-item { flex-direction: column; align-items: flex-start; }
-  .arch-arrow { padding-left: 23px; }
-  .arrow-h { display: none; }
-  .arrow-v { display: block; }
-  .arch-protocol { grid-template-columns: 1fr; }
+  .arch { padding: 52px 20px; }
+
+  /* rail container */
+  .arch-flow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  /* continuous vertical line */
+  .arch-flow::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 18px;
+    bottom: 18px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--green-med), var(--line));
+    border-radius: 2px;
+  }
+
+  .arch-flow-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 0;
+    position: relative;
+  }
+
+  /* dot on the rail */
+  .arch-rail-dot {
+    display: block;
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--green-dark);
+    border: 2px solid var(--gray-light);
+    box-shadow: 0 0 0 2px var(--green-med);
+    z-index: 1;
+    position: relative;
+  }
+
+  /* desktop arrow hidden */
+  .arch-arrow { display: none; }
+
+  /* node: full width, step number visible */
+  .arch-node {
+    flex: 1;
+    min-width: unset;
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .arch-node-step {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--green-med);
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+    min-width: 20px;
+  }
+
+  .arch-node-name { font-size: 13px; }
+  .arch-node-desc { font-size: 11px; }
+
+  /* protocol: 2 cols then 1 */
+  .arch-protocol { grid-template-columns: 1fr 1fr; }
+  .arch-proto-item:last-child { grid-column: 1 / -1; }
 }
 </style>

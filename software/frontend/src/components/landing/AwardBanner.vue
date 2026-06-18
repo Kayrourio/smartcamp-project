@@ -268,12 +268,21 @@ const { t, locale } = useI18n()
 @media (max-width: 480px) {
   .award-inner {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 28px;
+    align-items: center;
+    gap: 20px;
   }
   .award-badge-wrap {
-    align-self: flex-end;
-    margin-top: -20px;
+    order: -1;
+    align-self: center;
+    margin-top: 0;
   }
+  .award-body {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .award-pill { align-self: center; }
+  .award-meta { justify-content: center; }
+  .article-link { align-self: center; }
 }
 </style>

@@ -329,6 +329,11 @@ const { t } = useI18n()
 .ctx-news-link:hover { color: rgba(255,255,255,0.75); }
 
 @media (max-width: 480px) {
+  .ctx { padding: 52px 20px; }
+  .ctx-title { font-size: 26px; }
   .ctx-stats { grid-template-columns: 1fr; }
+  .ctx-stat-num { font-size: 22px; }
+  .ctx-solution { padding: 16px 18px; }
+  .ctx-sol-num { font-size: 22px; }
 }
 </style>

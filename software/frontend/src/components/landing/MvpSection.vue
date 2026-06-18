@@ -303,9 +303,13 @@ const scalePhases = [0, 1, 2, 3]
 
 @media (max-width: 560px) {
   .mvp-sensor-card { flex-direction: column; }
-  .mvp-sensor-visual { border-right: none; border-bottom: 1px solid var(--line); min-width: unset; }
-  .sensor-cylinder { flex-direction: row; width: 100%; max-width: 260px; border-radius: 8px; }
-  .sensor-top-section, .sensor-bottom-section { flex: 1; }
-  .sensor-divider { width: 10px; min-height: 100%; padding: 6px 4px; }
+  .mvp-sensor-visual { display: none; }
+  .mvp-sensor-info { padding: 20px 18px; }
+  .mvp-sensor-header { flex-direction: column; gap: 4px; }
+  .mvp-component-part { min-width: 90px; }
+
+  .mvp-scale-steps { border-radius: 10px; }
+  .mvp-phase { gap: 12px; padding: 14px 16px; }
+  .mvp-phase-num { font-size: 18px; min-width: 28px; }
 }
 </style>

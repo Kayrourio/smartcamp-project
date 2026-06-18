@@ -150,4 +150,10 @@ const icons = [IcoSensor, IcoMesh, IcoMapAlert]
   margin: 0;
   max-width: 480px;
 }
+
+@media (max-width: 480px) {
+  .how { padding: 52px 20px; }
+  .step-icon { width: 44px; height: 44px; }
+  .step-title { font-size: 16px; }
+}
 </style>
